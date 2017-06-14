@@ -1,12 +1,12 @@
 // Simple example to embed pictures in your sketch
-// and draw on the ILI9341 display with writeRect()
+// and draw on the HX8357 display with writeRect()
 //
 // By Frank Bösing
 //
-// https://forum.pjrc.com/threads/32601-SPI-Library-Issue-w-ILI9341-TFT-amp-PN532-NFC-Module-on-Teensy-3-2?p=94534&viewfull=1#post94534
+// https://forum.pjrc.com/threads/32601-SPI-Library-Issue-w-HX8357-TFT-amp-PN532-NFC-Module-on-Teensy-3-2?p=94534&viewfull=1#post94534
 
 #include "SPI.h"
-#include "ILI9341_t3.h"
+#include "HX8357_t3.h"
 
 // Converted to code with:
 // http://www.rinkydinkelectronics.com/t_imageconverter565.php
@@ -28,7 +28,7 @@
 
     tft.writeRect(0, 0, image_name.width, image_name.height, (uint16_t*)(image_name.pixel_data));
 
-  See also https://forum.pjrc.com/threads/35575-Export-for-ILI9341_t3-with-GIMP 
+  See also https://forum.pjrc.com/threads/35575-Export-for-HX8357_t3-with-GIMP 
 */
 
 
@@ -48,12 +48,12 @@
 //#define TFT_SCLK    14
 //#define TFT_MISO    12
 
-ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
+HX8357_t3 tft = HX8357_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
 
 void setup() {
   tft.begin();
   tft.setRotation(3);
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(HX8357_BLACK);
   tft.writeRect(32, 33, 256, 174, (uint16_t*)picture);
 }
 

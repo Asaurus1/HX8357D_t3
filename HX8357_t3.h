@@ -1,8 +1,8 @@
-// https://github.com/PaulStoffregen/ILI9341_t3
-// http://forum.pjrc.com/threads/26305-Highly-optimized-ILI9341-(320x240-TFT-color-display)-library
+// https://github.com/PaulStoffregen/HX8357_t3
+// http://forum.pjrc.com/threads/26305-Highly-optimized-HX8357-(320x240-TFT-color-display)-library
 
 /***************************************************
-  This is our library for the Adafruit  ILI9341 Breakout and Shield
+  This is our library for the Adafruit  HX8357 Breakout and Shield
   ----> http://www.adafruit.com/products/1651
 
   Check out the links above for our tutorials and wiring diagrams
@@ -46,94 +46,96 @@
 
 // <\SoftEgg>
 
-#ifndef _ILI9341_t3H_
-#define _ILI9341_t3H_
+#ifndef _HX8357_t3H_
+#define _HX8357_t3H_
 
 #ifdef __cplusplus
 #include "Arduino.h"
 #endif
 
-#define ILI9341_TFTWIDTH  240
-#define ILI9341_TFTHEIGHT 320
+/*********** Previously set to 240x320 (size of HX8357 screen). Changed to make the library work for the HX8357 controller *********/
+	#define HX8357_TFTWIDTH  320
+	#define HX8357_TFTHEIGHT 480
+/*********** End Changes ************/
 
-#define ILI9341_NOP     0x00
-#define ILI9341_SWRESET 0x01
-#define ILI9341_RDDID   0x04
-#define ILI9341_RDDST   0x09
+#define HX8357_NOP     0x00
+#define HX8357_SWRESET 0x01
+#define HX8357_RDDID   0x04
+#define HX8357_RDDST   0x09
 
-#define ILI9341_SLPIN   0x10
-#define ILI9341_SLPOUT  0x11
-#define ILI9341_PTLON   0x12
-#define ILI9341_NORON   0x13
+#define HX8357_SLPIN   0x10
+#define HX8357_SLPOUT  0x11
+#define HX8357_PTLON   0x12
+#define HX8357_NORON   0x13
 
-#define ILI9341_RDMODE  0x0A
-#define ILI9341_RDMADCTL  0x0B
-#define ILI9341_RDPIXFMT  0x0C
-#define ILI9341_RDIMGFMT  0x0D
-#define ILI9341_RDSELFDIAG  0x0F
+#define HX8357_RDMODE  0x0A
+#define HX8357_RDMADCTL  0x0B
+#define HX8357_RDPIXFMT  0x0C
+#define HX8357_RDIMGFMT  0x0D
+#define HX8357_RDSELFDIAG  0x0F
 
-#define ILI9341_INVOFF  0x20
-#define ILI9341_INVON   0x21
-#define ILI9341_GAMMASET 0x26
-#define ILI9341_DISPOFF 0x28
-#define ILI9341_DISPON  0x29
+#define HX8357_INVOFF  0x20
+#define HX8357_INVON   0x21
+#define HX8357_GAMMASET 0x26
+#define HX8357_DISPOFF 0x28
+#define HX8357_DISPON  0x29
 
-#define ILI9341_CASET   0x2A
-#define ILI9341_PASET   0x2B
-#define ILI9341_RAMWR   0x2C
-#define ILI9341_RAMRD   0x2E
+#define HX8357_CASET   0x2A
+#define HX8357_PASET   0x2B
+#define HX8357_RAMWR   0x2C
+#define HX8357_RAMRD   0x2E
 
-#define ILI9341_PTLAR    0x30
-#define ILI9341_MADCTL   0x36
-#define ILI9341_VSCRSADD 0x37
-#define ILI9341_PIXFMT   0x3A
+#define HX8357_PTLAR    0x30
+#define HX8357_MADCTL   0x36
+#define HX8357_VSCRSADD 0x37
+#define HX8357_PIXFMT   0x3A
 
-#define ILI9341_FRMCTR1 0xB1
-#define ILI9341_FRMCTR2 0xB2
-#define ILI9341_FRMCTR3 0xB3
-#define ILI9341_INVCTR  0xB4
-#define ILI9341_DFUNCTR 0xB6
+#define HX8357_FRMCTR1 0xB1
+#define HX8357_FRMCTR2 0xB2
+#define HX8357_FRMCTR3 0xB3
+#define HX8357_INVCTR  0xB4
+#define HX8357_DFUNCTR 0xB6
 
-#define ILI9341_PWCTR1  0xC0
-#define ILI9341_PWCTR2  0xC1
-#define ILI9341_PWCTR3  0xC2
-#define ILI9341_PWCTR4  0xC3
-#define ILI9341_PWCTR5  0xC4
-#define ILI9341_VMCTR1  0xC5
-#define ILI9341_VMCTR2  0xC7
+#define HX8357_PWCTR1  0xC0
+#define HX8357_PWCTR2  0xC1
+#define HX8357_PWCTR3  0xC2
+#define HX8357_PWCTR4  0xC3
+#define HX8357_PWCTR5  0xC4
+#define HX8357_VMCTR1  0xC5
+#define HX8357_VMCTR2  0xC7
 
-#define ILI9341_RDID1   0xDA
-#define ILI9341_RDID2   0xDB
-#define ILI9341_RDID3   0xDC
-#define ILI9341_RDID4   0xDD
+#define HX8357_RDID1   0xDA
+#define HX8357_RDID2   0xDB
+#define HX8357_RDID3   0xDC
+#define HX8357_RDID4   0xDD
 
-#define ILI9341_GMCTRP1 0xE0
-#define ILI9341_GMCTRN1 0xE1
+#define HX8357_GMCTRP1 0xE0
+#define HX8357_GMCTRN1 0xE1
 /*
-#define ILI9341_PWCTR6  0xFC
+#define HX8357_PWCTR6  0xFC
 
 */
 
 // Color definitions
-#define ILI9341_BLACK       0x0000      /*   0,   0,   0 */
-#define ILI9341_NAVY        0x000F      /*   0,   0, 128 */
-#define ILI9341_DARKGREEN   0x03E0      /*   0, 128,   0 */
-#define ILI9341_DARKCYAN    0x03EF      /*   0, 128, 128 */
-#define ILI9341_MAROON      0x7800      /* 128,   0,   0 */
-#define ILI9341_PURPLE      0x780F      /* 128,   0, 128 */
-#define ILI9341_OLIVE       0x7BE0      /* 128, 128,   0 */
-#define ILI9341_LIGHTGREY   0xC618      /* 192, 192, 192 */
-#define ILI9341_DARKGREY    0x7BEF      /* 128, 128, 128 */
-#define ILI9341_BLUE        0x001F      /*   0,   0, 255 */
-#define ILI9341_GREEN       0x07E0      /*   0, 255,   0 */
-#define ILI9341_CYAN        0x07FF      /*   0, 255, 255 */
-#define ILI9341_RED         0xF800      /* 255,   0,   0 */
-#define ILI9341_MAGENTA     0xF81F      /* 255,   0, 255 */
-#define ILI9341_YELLOW      0xFFE0      /* 255, 255,   0 */
-#define ILI9341_WHITE       0xFFFF      /* 255, 255, 255 */
-#define ILI9341_ORANGE      0xFD20      /* 255, 165,   0 */
-#define ILI9341_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
-#define ILI9341_PINK        0xF81F
+#define HX8357_BLACK       0x0000      /*   0,   0,   0 */
+#define HX8357_NAVY        0x000F      /*   0,   0, 128 */
+#define HX8357_DARKGREEN   0x03E0      /*   0, 128,   0 */
+#define HX8357_DARKCYAN    0x03EF      /*   0, 128, 128 */
+#define HX8357_MAROON      0x7800      /* 128,   0,   0 */
+#define HX8357_PURPLE      0x780F      /* 128,   0, 128 */
+#define HX8357_OLIVE       0x7BE0      /* 128, 128,   0 */
+#define HX8357_LIGHTGREY   0xC618      /* 192, 192, 192 */
+#define HX8357_DARKGREY    0x7BEF      /* 128, 128, 128 */
+#define HX8357_BLUE        0x001F      /*   0,   0, 255 */
+#define HX8357_GREEN       0x07E0      /*   0, 255,   0 */
+#define HX8357_CYAN        0x07FF      /*   0, 255, 255 */
+#define HX8357_RED         0xF800      /* 255,   0,   0 */
+#define HX8357_MAGENTA     0xF81F      /* 255,   0, 255 */
+#define HX8357_YELLOW      0xFFE0      /* 255, 255,   0 */
+#define HX8357_WHITE       0xFFFF      /* 255, 255, 255 */
+#define HX8357_ORANGE      0xFD20      /* 255, 165,   0 */
+#define HX8357_GREENYELLOW 0xAFE5      /* 173, 255,  47 */
+#define HX8357_PINK        0xF81F
 
 #define CL(_r,_g,_b) ((((_r)&0xF8)<<8)|(((_g)&0xFC)<<3)|((_b)>>3))
 
@@ -157,15 +159,14 @@ typedef struct {
 	unsigned char bits_delta;
 	unsigned char line_space;
 	unsigned char cap_height;
-} ILI9341_t3_font_t;
-
+} HX8357_t3_font_t;
 
 #ifdef __cplusplus
 
-class ILI9341_t3 : public Print
+class HX8357_t3 : public Print
 {
   public:
-	ILI9341_t3(uint8_t _CS, uint8_t _DC, uint8_t _RST = 255, uint8_t _MOSI=11, uint8_t _SCLK=13, uint8_t _MISO=12);
+	HX8357_t3(uint8_t _CS, uint8_t _DC, uint8_t _RST = 255, uint8_t _MOSI=11, uint8_t _SCLK=13, uint8_t _MISO=12);
 	void begin(void);
   	void sleep(bool enable);		
 	void pushColor(uint16_t color);
@@ -269,7 +270,7 @@ class ILI9341_t3 : public Print
 	void drawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color);
 	int16_t getCursorX(void) const { return cursor_x; }
 	int16_t getCursorY(void) const { return cursor_y; }
-	void setFont(const ILI9341_t3_font_t &f) { font = &f; }
+	void setFont(const HX8357_t3_font_t &f) { font = &f; }
 	void setFontAdafruit(void) { font = NULL; }
 	void drawFontChar(unsigned int c);
 	int16_t strPixelLen(char * str);
@@ -280,7 +281,7 @@ class ILI9341_t3 : public Print
 	uint16_t textcolor, textbgcolor;
 	uint8_t textsize, rotation;
 	boolean wrap; // If set, 'wrap' text at right edge of display
-	const ILI9341_t3_font_t *font;
+	const HX8357_t3_font_t *font;
 
   	uint8_t  _rst;
   	uint8_t _cs, _dc;
@@ -289,10 +290,10 @@ class ILI9341_t3 : public Print
 
 	void setAddr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 	  __attribute__((always_inline)) {
-		writecommand_cont(ILI9341_CASET); // Column addr set
+		writecommand_cont(HX8357_CASET); // Column addr set
 		writedata16_cont(x0);   // XSTART
 		writedata16_cont(x1);   // XEND
-		writecommand_cont(ILI9341_PASET); // Row addr set
+		writecommand_cont(HX8357_PASET); // Row addr set
 		writedata16_cont(y0);   // YSTART
 		writedata16_cont(y1);   // YEND
 	}
@@ -365,7 +366,7 @@ class ILI9341_t3 : public Print
 		if((x+w-1) >= _width)  w = _width-x;
 
 		setAddr(x, y, x+w-1, y);
-		writecommand_cont(ILI9341_RAMWR);
+		writecommand_cont(HX8357_RAMWR);
 		do { writedata16_cont(color); } while (--w > 0);
 	}
 	void VLine(int16_t x, int16_t y, int16_t h, uint16_t color)
@@ -374,14 +375,14 @@ class ILI9341_t3 : public Print
 		if(y < 0) {	h += y; y = 0; 	}
 		if((y+h-1) >= _height) h = _height-y;
 		setAddr(x, y, x, y+h-1);
-		writecommand_cont(ILI9341_RAMWR);
+		writecommand_cont(HX8357_RAMWR);
 		do { writedata16_cont(color); } while (--h > 0);
 	}
 	void Pixel(int16_t x, int16_t y, uint16_t color)
 	  __attribute__((always_inline)) {
 		if((x >= _width) || (x < 0) || (y >= _height) || (y < 0)) return;
 		setAddr(x, y, x, y);
-		writecommand_cont(ILI9341_RAMWR);
+		writecommand_cont(HX8357_RAMWR);
 		writedata16_cont(color);
 	}
 	void drawFontBits(uint32_t bits, uint32_t numbits, uint32_t x, uint32_t y, uint32_t repeat);
@@ -393,12 +394,12 @@ class ILI9341_t3 : public Print
 
 // To avoid conflict when also using Adafruit_GFX or any Adafruit library
 // which depends on Adafruit_GFX, #include the Adafruit library *BEFORE*
-// you #include ILI9341_t3.h.
+// you #include HX8357_t3.h.
 #ifndef _ADAFRUIT_GFX_H
 class Adafruit_GFX_Button {
 public:
 	Adafruit_GFX_Button(void) { _gfx = NULL; }
-	void initButton(ILI9341_t3 *gfx, int16_t x, int16_t y,
+	void initButton(HX8357_t3 *gfx, int16_t x, int16_t y,
 		uint8_t w, uint8_t h,
 		uint16_t outline, uint16_t fill, uint16_t textcolor,
 		const char *label, uint8_t textsize);
@@ -412,7 +413,7 @@ public:
 	bool justPressed() { return (currstate && !laststate); }
 	bool justReleased() { return (!currstate && laststate); }
 private:
-	ILI9341_t3 *_gfx;
+	HX8357_t3 *_gfx;
 	int16_t _x, _y;
 	uint16_t _w, _h;
 	uint8_t _textsize;

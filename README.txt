@@ -1,10 +1,14 @@
-Discussion regarding this optimized version:
+This is a version of Paul Stoffregen's highly-optimized ILI9341_t3 TFT library for the Adafruit HX8357D 2.8'' TFT display (https://www.adafruit.com/product/1770). This port runs about 2X as fast as the original Adafruit HX8357 display library on the Teensy 3.5.
 
-http://forum.pjrc.com/threads/26305-Highly-optimized-ILI9341-%28320x240-TFT-color-display%29-library
+NOTICE: THE CURRENT INITIALIZTION COMMANDS FOR THE LCD ARE NOT 100% CORRECT. THIS WILL BE FIXED IN A FUTURE RELEASE.
+
+Discussion regarding the original optimized version:
+
+http://forum.pjrc.com/threads/26305-Highly-optimized-HX8357-%28320x240-TFT-color-display%29-library
 
 ------------------------------------------
 
-This is a library for the Adafruit ILI9341 display products
+This is a library for the Adafruit HX8357 display products
 
 This library works with the Adafruit 2.8" Touch Shield V2 (SPI)
   ----> http://www.adafruit.com/products/1651
@@ -20,8 +24,8 @@ products from Adafruit!
 Written by Limor Fried/Ladyada for Adafruit Industries.
 MIT license, all text above must be included in any redistribution
 
-To download. click the DOWNLOADS button in the top right corner, rename the uncompressed folder Adafruit_ILI9341. Check that the Adafruit_ILI9341 folder contains Adafruit_ILI9341.cpp and Adafruit_ILI9341.
+To download. click the DOWNLOADS button in the top right corner, rename the uncompressed folder Adafruit_HX8357. Check that the Adafruit_HX8357 folder contains Adafruit_HX8357.cpp and Adafruit_HX8357.
 
-Place the Adafruit_ILI9341 library folder your arduinosketchfolder/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE
+Place the Adafruit_HX8357 library folder your arduinosketchfolder/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE
 
 Also requires the Adafruit_GFX library for Arduino.

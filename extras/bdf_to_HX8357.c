@@ -1,4 +1,4 @@
-/* Convert BDF format font data to ILI9341_t3 packed format
+/* Convert BDF format font data to HX8357_t3 packed format
    Copyright 2015 - Paul Stoffregen <paul@pjrc.com>
 
    This program is free software: you can redistribute it and/or modify
@@ -262,10 +262,10 @@ int main()
 		printf("\tunsigned char bits_delta;\n");
 		printf("\tunsigned char line_space;\n");
 		printf("\tunsigned char cap_height;\n");
-		printf("} ILI9341_t3_font_t;\n");
+		printf("} HX8357_t3_font_t;\n");
 		printf("*/\n");
 	}
-	printf("const ILI9341_t3_font_t %s = {\n", font_name);
+	printf("const HX8357_t3_font_t %s = {\n", font_name);
 	printf("\t%s_index,\n", font_name);
 	printf("\t0,\n");
 	printf("\t%s_data,\n", font_name);
@@ -504,7 +504,7 @@ void die(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	//fprintf(stderr, "bdf_to_ili9341: ");
+	//fprintf(stderr, "bdf_to_HX8357: ");
 	vfprintf(stderr, format, args);
 	exit(1);
 }

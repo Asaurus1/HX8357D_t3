@@ -17,7 +17,7 @@
 // https://github.com/zkarcher/demosauce
 
 #include "SPI.h"
-#include "ILI9341_t3.h"
+#include "HX8357_t3.h"
 #include "font_Arial.h"
 
 #include "FrameParams.h"
@@ -59,7 +59,7 @@ const uint8_t MIC_PIN = 14;
 const uint8_t BACKLIGHT_PIN = 23;
 
 // Use hardware SPI (#13, #12, #11) and the above for CS/DC
-ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);
+HX8357_t3 tft = HX8357_t3(TFT_CS, TFT_DC);
 FrameParams frameParams;
 long previousMillis = 0;
 
@@ -112,12 +112,12 @@ void setup() {
 
   tft.begin();
   tft.setRotation( 3 );
-  tft.fillScreen(ILI9341_BLACK);
+  tft.fillScreen(HX8357_BLACK);
 
   // Serial
   if( DO_BENCHMARKS ) {
     Serial.begin( SERIAL_BAUD_RATE );
-    tft.setTextColor(ILI9341_YELLOW);
+    tft.setTextColor(HX8357_YELLOW);
     tft.setFont(Arial_18);
     tft.setCursor(98, 42);
     tft.print("waiting for");
@@ -126,10 +126,10 @@ void setup() {
     tft.print("Arduino");
     tft.setCursor(60, 120);
     tft.print("Serial Monitor");
-    tft.setTextColor(ILI9341_GREEN);
+    tft.setTextColor(HX8357_GREEN);
     tft.setFont(Arial_18);
     while (!Serial && millis() < 8000) { // wait for Arduino Serial Monitor
-      tft.fillRect(118, 182, 42, 18, ILI9341_BLACK);
+      tft.fillRect(118, 182, 42, 18, HX8357_BLACK);
       tft.setCursor(118, 182);
       tft.print((8000.0 - (float)millis()) / 1000.0, 1);
       tft.print(" sec");
