@@ -53,10 +53,12 @@
 #include "Arduino.h"
 #endif
 
-/*********** Previously set to 240x320 (size of HX8357 screen). Changed to make the library work for the HX8357 controller *********/
+#define HX8357D 0xD
+#define HX8357B 0xB
+
+// Previously set to 240x320 (size of ILI9341 screen). Changed to make the library work for the HX8357 controller
 	#define HX8357_TFTWIDTH  320
 	#define HX8357_TFTHEIGHT 480
-/*********** End Changes ************/
 
 #define HX8357_NOP     0x00
 #define HX8357_SWRESET 0x01
@@ -181,7 +183,7 @@ class HX8357_t3 : public Print
 {
   public:
 	HX8357_t3(uint8_t _CS, uint8_t _DC, uint8_t _RST = 255, uint8_t _MOSI=11, uint8_t _SCLK=13, uint8_t _MISO=12);
-	void begin(void);
+	void begin(uint8_t type);
   	void sleep(bool enable);		
 	void pushColor(uint16_t color);
 	void fillScreen(uint16_t color);

@@ -272,22 +272,22 @@ void HX8357_t3::setRotation(uint8_t m)
 	writecommand_cont(HX8357_MADCTL);
 	switch (rotation) {
 	case 0:
-		writedata8_last(MADCTL_MX | MADCTL_BGR);
+		writedata8_last(MADCTL_MX | MADCTL_MY | MADCTL_RGB);
 		_width  = HX8357_TFTWIDTH;
 		_height = HX8357_TFTHEIGHT;
 		break;
 	case 1:
-		writedata8_last(MADCTL_MV | MADCTL_BGR);
+		writedata8_last(MADCTL_MV | MADCTL_MY | MADCTL_RGB);
 		_width  = HX8357_TFTHEIGHT;
 		_height = HX8357_TFTWIDTH;
 		break;
 	case 2:
-		writedata8_last(MADCTL_MY | MADCTL_BGR);
+		writedata8_last(MADCTL_RGB);
 		_width  = HX8357_TFTWIDTH;
 		_height = HX8357_TFTHEIGHT;
 		break;
 	case 3:
-		writedata8_last(MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR);
+		writedata8_last(MADCTL_MX | MADCTL_MV | MADCTL_RGB);
 		_width  = HX8357_TFTHEIGHT;
 		_height = HX8357_TFTWIDTH;
 		break;
@@ -615,21 +615,13 @@ void HX8357_t3::writeRect1BPP(int16_t x, int16_t y, int16_t w, int16_t h, const 
 	0
 };*/
 
-static const uint8_t init_commands_D[] = {
+static const uint8_t test_cmds[] = {
 	1, HX8357_SWRESET,
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
+	1, HX8357_SLPOUT, // exit sleep
+    1, HX8357_DISPON, // display on
+    1, HX8357_DISPOFF, // display off
+    1, HX8357_DISPON, // display oN
 	4, HX8357D_SETC, 0xFF, 0x83, 0x57,
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
 	5, HX8357_SETRGB, 0x80, 0x00, 0X06, 0X06, // enable SDO pin
 	2, HX8357D_SETCOM, 0x25, 			   // -1.52V
 	2, HX8357_SETOSC, 0x68,				   // Normal mode 70Hz, Idle mode 55 Hz
@@ -646,20 +638,10 @@ static const uint8_t init_commands_D[] = {
 	2, HX8357_MADCTL, 0xC0, // Memory Access Control
 	2, HX8357_TEON, 0x00,
 	3, HX8357_TEARLINE, 0x00, 0x02,
-    1, HX8357_SLPOUT, // exit sleep
-    6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, //nop
-	1, HX8357_DISPON, // display on
-
 	0
 };
 
-
-void HX8357_t3::begin(void)
+void HX8357_t3::begin(uint8_t type)
 {
     // verify SPI pins are valid;
     #if defined(__MK64FX512__) || defined(__MK66FX1M0__)
@@ -692,8 +674,8 @@ void HX8357_t3::begin(void)
 		digitalWrite(_rst, HIGH);
 		delay(150);
 	}
-	/*
-	uint8_t x = readcommand8(HX8357_RDMODE);
+	
+	/*uint8_t x = readcommand8(HX8357_RDMODE);
 	Serial.print("\nDisplay Power Mode: 0x"); Serial.println(x, HEX);
 	x = readcommand8(HX8357_RDMADCTL);
 	Serial.print("\nMADCTL Mode: 0x"); Serial.println(x, HEX);
@@ -704,25 +686,215 @@ void HX8357_t3::begin(void)
 	x = readcommand8(HX8357_RDSELFDIAG);
 	Serial.print("\nSelf Diagnostic: 0x"); Serial.println(x, HEX);
 	*/
-	SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
-	const uint8_t *addr = init_commands_D;
-	while (1) {
-		uint8_t count = *addr++;
-		if (count-- == 0) break;
-		writecommand_cont(*addr++);
-		while (count-- > 0) {
-			writedata8_cont(*addr++);
-		}
+
+	/****************** Initialization Sequences ****************/
+	if (type == HX8357B) {
+		SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+	    //Serial.println("linux HX8357B"); 
+	    // seqpower
+	    writecommand_cont(HX8357B_SETPOWER);
+	    writedata8_cont(0x44);
+	    writedata8_cont(0x41); 
+	    writedata8_cont(0x06);
+	    // seq_vcom
+	    writecommand_cont(HX8357B_SETVCOM);
+	    writedata8_cont(0x40); 
+	    writedata8_cont(0x10);
+	    // seq_power_normal
+	    writecommand_cont(HX8357B_SETPWRNORMAL);
+	    writedata8_cont(0x05); 
+	    writedata8_cont(0x12);
+	    // seq_panel_driving
+	    writecommand_cont(HX8357B_SET_PANEL_DRIVING);
+	    writedata8_cont(0x14); 
+	    writedata8_cont(0x3b);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x02);
+	    writedata8_cont(0x11);
+	    // seq_display_frame
+	    writecommand_cont(HX8357B_SETDISPLAYFRAME);
+	    writedata8_cont(0x0c);  // 6.8mhz
+	    // seq_panel_related
+	    writecommand_cont(HX8357B_SETPANELRELATED);
+	    writedata8_cont(0x01);  // BGR
+	    // seq_undefined1
+	    writecommand_cont(0xEA);
+	    writedata8_cont(0x03);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x00); 
+	    // undef2
+	    writecommand_cont(0xEB);
+	    writedata8_cont(0x40);
+	    writedata8_cont(0x54);
+	    writedata8_cont(0x26); 
+	    writedata8_cont(0xdb);
+	    // seq_gamma
+	    writecommand_cont(HX8357B_SETGAMMA); // 0xC8
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x15);
+	    writedata8_cont(0x00); 
+	    writedata8_cont(0x22);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x08);
+	    writedata8_cont(0x77); 
+	    writedata8_cont(0x26);
+	    writedata8_cont(0x66);
+	    writedata8_cont(0x22);
+	    writedata8_cont(0x04); 
+	    writedata8_cont(0x00);
+
+	    // seq_addr mode
+	    writecommand_cont(HX8357_MADCTL);
+	    writedata8_cont(0xC0);
+	    // pixel format
+	    writecommand_cont(HX8357_COLMOD);
+	    writedata8_cont(0x55);
+	    
+	    // set up whole address box
+	    // paddr
+	    writecommand_cont(HX8357_PASET);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x01); 
+	    writedata8_cont(0xDF);
+	    // caddr
+	    writecommand_cont(HX8357_CASET);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x01); 
+	    writedata8_cont(0x3F);
+
+	    // display mode
+	    writecommand_cont(HX8357B_SETDISPMODE);
+	    writedata8_cont(0x00); // CPU (DBI) and internal oscillation ??
+	    // exit sleep
+	    writecommand_last(HX8357_SLPOUT);
+	    SPI.endTransaction();
+
+	    delay(120);
+	    // main screen turn on
+	    SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+	    writecommand_last(HX8357_DISPON);
+	    SPI.endTransaction();
+	    delay(10);		
+	} else if (type == HX8357D) {
+		SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+		writecommand_last(HX8357_SWRESET);
+		SPI.endTransaction();
+	    delay(10);
+
+	    // setextc
+	    SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+	    writecommand_cont(HX8357D_SETC);
+	    writedata8_cont(0xFF);
+	    writedata8_cont(0x83);
+	    writedata8_last(0x57);
+	    SPI.endTransaction();
+	    delay(300);
+
+	    // setRGB which also enables SDO
+	    SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+	    writecommand_cont(HX8357_SETRGB); 
+	    writedata8_cont(0x80);  //enable SDO pin!
+	//    writedata(0x00);  //disable SDO pin!
+	    writedata8_cont(0x0);
+	    writedata8_cont(0x06);
+	    writedata8_cont(0x06);
+
+	    writecommand_cont(HX8357D_SETCOM);
+	    writedata8_cont(0x25);  // -1.52V
+	    
+	    writecommand_cont(HX8357_SETOSC);
+	    writedata8_cont(0x68);  // Normal mode 70Hz, Idle mode 55 Hz
+	    
+	    writecommand_cont(HX8357_SETPANEL); //Set Panel
+	    writedata8_cont(0x05);  // BGR, Gate direction swapped
+	    
+	    writecommand_cont(HX8357_SETPWR1);
+	    writedata8_cont(0x00);  // Not deep standby
+	    writedata8_cont(0x15);  //BT
+	    writedata8_cont(0x1C);  //VSPR
+	    writedata8_cont(0x1C);  //VSNR
+	    writedata8_cont(0x83);  //AP
+	    writedata8_cont(0xAA);  //FS
+
+	    writecommand_cont(HX8357D_SETSTBA);  
+	    writedata8_cont(0x50);  //OPON normal
+	    writedata8_cont(0x50);  //OPON idle
+	    writedata8_cont(0x01);  //STBA
+	    writedata8_cont(0x3C);  //STBA
+	    writedata8_cont(0x1E);  //STBA
+	    writedata8_cont(0x08);  //GEN
+	    
+	    writecommand_cont(HX8357D_SETCYC);  
+	    writedata8_cont(0x02);  //NW 0x02
+	    writedata8_cont(0x40);  //RTN
+	    writedata8_cont(0x00);  //DIV
+	    writedata8_cont(0x2A);  //DUM
+	    writedata8_cont(0x2A);  //DUM
+	    writedata8_cont(0x0D);  //GDON
+	    writedata8_cont(0x78);  //GDOFF
+
+	    writecommand_cont(HX8357D_SETGAMMA); 
+	    writedata8_cont(0x02);
+	    writedata8_cont(0x0A);
+	    writedata8_cont(0x11);
+	    writedata8_cont(0x1d);
+	    writedata8_cont(0x23);
+	    writedata8_cont(0x35);
+	    writedata8_cont(0x41);
+	    writedata8_cont(0x4b);
+	    writedata8_cont(0x4b);
+	    writedata8_cont(0x42);
+	    writedata8_cont(0x3A);
+	    writedata8_cont(0x27);
+	    writedata8_cont(0x1B);
+	    writedata8_cont(0x08);
+	    writedata8_cont(0x09);
+	    writedata8_cont(0x03);
+	    writedata8_cont(0x02);
+	    writedata8_cont(0x0A);
+	    writedata8_cont(0x11);
+	    writedata8_cont(0x1d);
+	    writedata8_cont(0x23);
+	    writedata8_cont(0x35);
+	    writedata8_cont(0x41);
+	    writedata8_cont(0x4b);
+	    writedata8_cont(0x4b);
+	    writedata8_cont(0x42);
+	    writedata8_cont(0x3A);
+	    writedata8_cont(0x27);
+	    writedata8_cont(0x1B);
+	    writedata8_cont(0x08);
+	    writedata8_cont(0x09);
+	    writedata8_cont(0x03);
+	    writedata8_cont(0x00);
+	    writedata8_cont(0x01);
+	    
+	    writecommand_cont(HX8357_COLMOD);
+	    writedata8_cont(0x55);  // 16 bit
+	    
+	    writecommand_cont(HX8357_MADCTL);  
+	    writedata8_cont(0xC0); 
+	    
+	    writecommand_cont(HX8357_TEON);  // TE off
+	    writedata8_cont(0x00); 
+	    
+	    writecommand_cont(HX8357_TEARLINE);  // tear line
+	    writedata8_cont(0x00); 
+	    writedata8_cont(0x02);
+
+	    writecommand_last(HX8357_SLPOUT); //Exit Sleep
+	    SPI.endTransaction();
+	    delay(150);
+	    
+	    SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
+	    writecommand_last(HX8357_DISPON);  // display on
+	    SPI.endTransaction();
+	    delay(50);
+	} else {
+		//Serial.println("unknown type");
 	}
-	writecommand_last(HX8357_SLPOUT);    // Exit Sleep
-	SPI.endTransaction();
-
-	delay(120); 		
-	SPI.beginTransaction(SPISettings(SPICLOCK, MSBFIRST, SPI_MODE0));
-	writecommand_last(HX8357_DISPON);    // Display on
-	SPI.endTransaction();
-
-	setRotation(0); //This command somehow fixes the "inverted colors" problem created by the initialization commands above, which weren't changed when the library was ported from the HX8357. 
 }
 
 
