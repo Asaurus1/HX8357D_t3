@@ -287,6 +287,7 @@ class HX8357_t3 : public Print
 	int16_t getCursorX(void) const { return cursor_x; }
 	int16_t getCursorY(void) const { return cursor_y; }
 	void setFont(const HX8357_t3_font_t &f) { font = &f; }
+	void setFont(const ILI9341_t3_font_t &f) { font = &f; }
 	void setFontAdafruit(void) { font = NULL; }
 	void drawFontChar(unsigned int c);
 	int16_t strPixelLen(char * str);

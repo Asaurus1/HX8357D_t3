@@ -1,6 +1,6 @@
 This is a version of Paul Stoffregen's highly-optimized ILI9341_t3 TFT library for the Adafruit HX8357D 3.5" TFT display (https://www.adafruit.com/product/2050). The extra speed is acheived by optimizing the SPI transactions and using hardware SPI only. This port runs about 2X as fast as the original Adafruit HX8357 display library on the Teensy 3.5, as shown below.
 
-/* This Library (on Teensy 3.5 12Mhz, Fast optimization) */
+/* This Library (on Teensy 3.5 120Mhz, Fast optimization) */
 HX8357 Test!
 Display Power Mode: 0xCE
 MADCTL Mode: 0xE0
@@ -22,7 +22,7 @@ Rounded rects (outline)  49729
 Rounded rects (filled)   1183395
 Done!
 
-/* Old Library (on Teensy 3.5 12Mhz) */
+/* Old Library (on Teensy 3.5 120Mhz, Fast optimization) */
 Display Power Mode: 0xCE
 MADCTL Mode: 0xE0
 Pixel Format: 0x2
